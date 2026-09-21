@@ -5,7 +5,8 @@
 メニューも、各ページの文章も、ブログも、Obsidian のノートです。
 直したくなったら Obsidian で書き換えるだけ。管理画面はありません。
 
-> **はじめての方は、[`はじめに.html`](はじめに.html) をブラウザで開いてください。**
+> **はじめての方は、手引きを開いてください → <https://jagyamamoto.github.io/Jagwebbuilder/>**
+> （このリポジトリを取り込んだあとは、フォルダの中の `はじめに.html` をダブルクリックしても開けます）
 > 準備するものから公開・ドメイン・公開後の直し方まで、順番に進められます。
 > 途中の青い囲みをコードAI（Claude Code / Codex）に貼り付けるだけで、作業のほとんどはAIが進めます。
 
@@ -35,7 +36,7 @@ Astro で書き出し、Cloudflare Pages で公開します。**月額の費用�
 Claude Code か Codex をお使いなら、こう頼むだけです。
 
 > このリポジトリを使って、うちのホームページを作ってください。
-> https://github.com/＜公開後のURL＞
+> https://github.com/jagyamamoto/Jagwebbuilder
 
 AIが [`AGENTS.md`](AGENTS.md) を読み、屋号や載せたい内容を聞きながら、公開まで進めます。
 

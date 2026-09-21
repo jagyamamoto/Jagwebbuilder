@@ -1,0 +1,39 @@
+name: Publish guide
+
+# 手引き（guide/）を GitHub Pages に出す。
+# ホームページのひな形そのものは、ここでは公開しない（利用者が自分の Cloudflare に出すもの）。
+on:
+  push:
+    branches: [main]
+    paths:
+      - "guide/**"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+      - name: Upload guide
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: guide
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
