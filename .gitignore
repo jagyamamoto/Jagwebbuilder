@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.astro/
+.wrangler/
+.env
+.dev.vars
+.DS_Store
+# Obsidian が端末ごとに書き換えるもの（設定の app.json だけ残す）
+content/.obsidian/workspace*.json
+content/.obsidian/cache

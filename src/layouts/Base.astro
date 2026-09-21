@@ -1,0 +1,75 @@
+---
+// すべてのページの外枠。サイト名・メニュー・連絡先は content/ から読む。
+// ★ このファイルに文言を直接書かないこと。
+//   書いた瞬間に「Obsidian を直してもサイトが変わらない場所」ができる。
+import '../styles/global.css';
+import { site, menu } from '../lib/site.mjs';
+
+const { title, description, image, type = 'website', jsonld = [] } = Astro.props;
+const s = site();
+const items = menu();
+const path = Astro.url.pathname;
+const pageTitle = title && title !== s.name ? `${title} | ${s.name}` : s.name;
+const desc = description || s.description;
+const canonical = s.url ? new URL(path, s.url + '/').href : null;
+const ogImage = image && s.url ? new URL(image, s.url + '/').href : null;
+
+// 公開前（site.md の published: false）は、検索に載らないようにする。
+// 作りかけのページが検索結果に出ると、あとから消すのに手間がかかる。
+const robots = s.published ? 'index, follow' : 'noindex, nofollow';
+
+const org = { '@context': 'https://schema.org', '@type': 'Organization', name: s.name,
+  ...(s.url ? { url: s.url } : {}), ...(s.email ? { email: s.email } : {}), ...(s.tel ? { telephone: s.tel } : {}) };
+---
+<!doctype html>
+<html lang={s.lang}>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{pageTitle}</title>
+  {desc && <meta name="description" content={desc}>}
+  <meta name="robots" content={robots}>
+  {canonical && <link rel="canonical" href={canonical}>}
+  <meta property="og:title" content={pageTitle}>
+  {desc && <meta property="og:description" content={desc}>}
+  <meta property="og:type" content={type}>
+  <meta property="og:site_name" content={s.name}>
+  {canonical && <meta property="og:url" content={canonical}>}
+  {ogImage && <meta property="og:image" content={ogImage}>}
+  <meta name="twitter:card" content={ogImage ? 'summary_large_image' : 'summary'}>
+  <link rel="alternate" type="application/rss+xml" title={s.name} href="/rss.xml">
+  {[org, ...jsonld].map((j) => <script type="application/ld+json" set:html={JSON.stringify(j)} />)}
+</head>
+<body style={`--accent:${s.color};--accent-ink:${s.accentInk}`}>
+  {!s.published && <div class="draft-note">準備中のサイトです（検索には載りません）</div>}
+  <header class="site-header">
+    <div class="wrap">
+      <a class="site-name" href="/">{s.name}</a>
+      <nav class="nav nav-wide" aria-label="メニュー">
+        {items.map((i) => <a href={i.url} aria-current={!i.external && i.url === path ? 'page' : undefined}
+          target={i.external ? '_blank' : undefined} rel={i.external ? 'noopener' : undefined}>{i.label}</a>)}
+      </nav>
+      <details class="nav-toggle">
+        <summary>メニュー</summary>
+        <nav class="nav" aria-label="メニュー">
+          {items.map((i) => <a href={i.url} aria-current={!i.external && i.url === path ? 'page' : undefined}
+            target={i.external ? '_blank' : undefined} rel={i.external ? 'noopener' : undefined}>{i.label}</a>)}
+        </nav>
+      </details>
+    </div>
+  </header>
+
+  <slot name="hero" />
+  <main><div class="wrap"><slot /></div></main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <p class="name">{s.name}</p>
+      {s.address && <p>{s.address}</p>}
+      {s.tel && <p>電話 <a href={`tel:${String(s.tel).replace(/[^\d+]/g, '')}`}>{s.tel}</a></p>}
+      {s.email && <p><a href={`mailto:${s.email}`}>{s.email}</a></p>}
+      {s.footer && <p style="margin-top:12px">{s.footer}</p>}
+    </div>
+  </footer>
+</body>
+</html>

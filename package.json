@@ -1,0 +1,22 @@
+{
+  "name": "obsidian-web-kit",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "node scripts/check.mjs",
+    "deploy": "node scripts/deploy.mjs"
+  },
+  "dependencies": {
+    "@astrojs/markdown-satteri": "^0.4.1",
+    "astro": "^7.3.3",
+    "satteri": "^0.10.5"
+  },
+  "devDependencies": {
+    "wrangler": "^4.135.0"
+  }
+}

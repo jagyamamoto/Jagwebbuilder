@@ -1,0 +1,34 @@
+---
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { publishedPosts, fmtDate } from '../../lib/posts.mjs';
+import { site } from '../../lib/site.mjs';
+
+export async function getStaticPaths() {
+  // publish: true のものだけページにする。下書きは URL 自体が生まれない。
+  return (await publishedPosts()).map((p) => ({ params: { slug: p.entry.id }, props: { post: p } }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post.entry);
+const d = post.entry.data;
+const s = site();
+const jsonld = [{
+  '@context': 'https://schema.org', '@type': 'BlogPosting', headline: post.title,
+  ...(post.date ? { datePublished: post.date.toISOString() } : {}),
+  ...(d.description ? { description: d.description } : {}),
+  author: { '@type': 'Organization', name: s.name },
+}];
+---
+<Base title={post.title} description={d.description} image={d.image} type="article" jsonld={jsonld}>
+  <article class="prose">
+    <h1>{post.title}</h1>
+    <p class="post-meta">
+      {post.date && <time datetime={post.date.toISOString().slice(0, 10)}>{fmtDate(post.date)}</time>}
+      {d.tags.length > 0 && <span style="margin-left:12px">{d.tags.map((t) => <span class="tag">{t}</span>)}</span>}
+    </p>
+    <Content />
+    <hr>
+    <p><a href="/blog/">← ブログの一覧へ</a></p>
+  </article>
+</Base>

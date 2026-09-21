@@ -1,0 +1,21 @@
+---
+import Base from '../../layouts/Base.astro';
+import { publishedPosts, fmtDate } from '../../lib/posts.mjs';
+const posts = await publishedPosts();
+---
+<Base title="ブログ" description="お知らせとブログの一覧です。">
+  <div class="prose">
+    <h1>ブログ</h1>
+    {posts.length === 0 && <p>まだ記事がありません。</p>}
+    <ul class="post-list">
+      {posts.map((p) => (
+        <li><a href={`/blog/${p.entry.id}/`}>
+          <time datetime={p.date?.toISOString().slice(0, 10)}>{fmtDate(p.date)}</time>
+          <span class="t">{p.title}
+            {p.entry.data.description && <span class="d">{p.entry.data.description}</span>}
+          </span>
+        </a></li>
+      ))}
+    </ul>
+  </div>
+</Base>
