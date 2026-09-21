@@ -115,7 +115,7 @@ function parseItem(text, notes) {
   const wiki = text.match(/\[\[([^\]|]+?)(?:\|([^\]]+))?\]\]/);
   const md = text.match(/\[([^\]]+)\]\(([^)]+)\)/);
   if (wiki) {
-    const name = wiki[1].trim();
+    const name = wiki[1].replace(/\\+$/, '').trim();
     const url = notes.get(name);
     if (!url) { console.warn(`  ⚠ menu.md: 「${name}」というノートが見つかりません（メニューから外しました）`); return null; }
     return { label: (wiki[2] || name).trim(), url, external: false, children: [] };

@@ -22,7 +22,7 @@ const check = run('node', ['scripts/check.mjs'], { stdio: 'inherit' });
 if (check.status !== 0) stop('点検で「だめ」が出ました。上の内容を直してから、もう一度実行してください。');
 
 const s = site();
-if (!s.project) stop('content/site.md に project: を書いてください（公開するときの名前。例: project: sakuraweb）');
+if (!s.project) stop('content/site.md に project: を書いてください（公開するときの名前。例: project: jag-curry-shop）');
 const project = String(s.project);
 
 // ---------- 2. Cloudflare にログインしているか ----------

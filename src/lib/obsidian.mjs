@@ -144,6 +144,9 @@ export function obsidianLinks() {
       if (!node.url || isOutside(node.url) || inTodo(node, ctx)) return;
       let raw = node.url;
       try { raw = decodeURIComponent(raw); } catch { /* そのまま使う */ }
+      // 表の中では [[ノート名\|表示名]] と \ を付けるのが Obsidian の作法（表の区切りとぶつかるため）。
+      // その \ が名前の末尾に残って届くので、外す。
+      raw = raw.replace(/\\+$/, '');
       const [name, heading] = raw.replace(/\.md$/, '').split('#');
       const url = indexes().notes.get(basename(name.trim()));
       if (!url) {
@@ -181,6 +184,7 @@ export function obsidianLinks() {
       if (!node.url || isOutside(node.url) || inTodo(node, ctx)) return;
       let raw = node.url;
       try { raw = decodeURIComponent(raw); } catch { /* そのまま使う */ }
+      raw = raw.replace(/\\+$/, '');          // 表の中の ![[写真.jpg\|説明]]
       const url = indexes().images.get(basename(raw));
       if (!url) {
         console.warn(`  ⚠ ${where(ctx)}: 画像「${basename(raw)}」が content/images/ に見つかりません`);

@@ -8,3 +8,8 @@ dist/
 # Obsidian が端末ごとに書き換えるもの（設定の app.json だけ残す）
 content/.obsidian/workspace*.json
 content/.obsidian/cache
+# 素材（元の写真や資料）は大きいので、git には入れない。入れ場所のフォルダだけ残す
+素材/写真/*
+素材/ロゴ/*
+素材/資料/*
+!素材/**/.gitkeep

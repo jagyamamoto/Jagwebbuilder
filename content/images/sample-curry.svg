@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 320" role="img" aria-label="お皿に盛ったカレー">
+  <rect width="640" height="320" fill="#fbf1e6"/>
+  <ellipse cx="320" cy="186" rx="236" ry="96" fill="#e9d9c6"/>
+  <ellipse cx="320" cy="176" rx="220" ry="86" fill="#ffffff"/>
+  <path d="M120 176 A200 78 0 0 1 320 98 L320 254 A200 78 0 0 1 120 176 Z" fill="#fffdf8"/>
+  <path d="M150 170 A170 62 0 0 1 320 110 L320 236 A170 62 0 0 1 150 170 Z" fill="#faf3e3"/>
+  <path d="M320 98 A200 78 0 0 1 320 254 Z" fill="#a8480c"/>
+  <path d="M320 112 A178 64 0 0 1 320 240 Z" fill="#bf5d18"/>
+  <circle cx="400" cy="160" r="16" fill="#8a3a08"/><circle cx="442" cy="194" r="13" fill="#8a3a08"/><circle cx="378" cy="206" r="11" fill="#d98a3a"/>
+  <path d="M236 150 q10 -14 20 0 M262 176 q10 -14 20 0 M216 190 q10 -14 20 0" stroke="#d9cdb4" stroke-width="3" fill="none"/>
+  <circle cx="356" cy="140" r="5" fill="#5d8a3a"/><circle cx="420" cy="220" r="5" fill="#5d8a3a"/><circle cx="462" cy="166" r="4" fill="#5d8a3a"/>
+</svg>

@@ -66,7 +66,8 @@ for (const f of allMd) {
   const { body } = frontmatter(readFileSync(f, 'utf8'));
   const text = stripTodo(body).replace(/```[\s\S]*?```/g, '').replace(/`[^`\n]*`/g, '');   // コードの中は見ない
   for (const m of text.matchAll(/(!?)\[\[([^\[\]\n]+?)\]\]/g)) {
-    const [target, label] = m[2].split('|').map((x) => x.trim());
+    // 表の中では [[ノート名\|表示名]] と書くので、名前の末尾の \ を外す
+    const [target, label] = m[2].split('|').map((x, i) => (i === 0 ? x.replace(/\\+$/, '') : x).trim());
     if (m[1] === '!') {
       if (!images.has(basename(target))) bad.push(`${rel(f)}: 画像「${basename(target)}」が content/images/ にありません`);
       else if (!label) warn.push(`${rel(f)}: 画像「${basename(target)}」に説明がありません（![[${basename(target)}|何の画像か]] と書くと、読み上げと検索に効きます）`);
@@ -80,6 +81,29 @@ for (const f of walk(CONTENT_DIR)) {
   if (!/\.(png|jpe?g|gif|webp|svg|avif)$/i.test(f)) continue;
   if (!f.startsWith(join(CONTENT_DIR, 'images'))) bad.push(`${rel(f)}: 画像は content/images/ の下に置いてください（ここにあるとサイトに出ません）`);
   else if (statSync(f).size > 1_500_000) warn.push(`${rel(f)}: ${(statSync(f).size / 1e6).toFixed(1)}MB あります。表示が遅くなるので、小さくするのをおすすめします`);
+}
+
+// ---------- 見本が残っていないか ----------
+// ひな形には「Jagカレーショップ」という見本の店が入っている。自分の店の名前に変えたのに、
+// 本文のどこかに見本の名前が残っていると、公開してから気づくことになる。
+const SAMPLE = 'Jagカレーショップ';
+if (s.name !== SAMPLE) {
+  for (const f of allMd) {
+    if (stripTodo(readFileSync(f, 'utf8')).includes(SAMPLE)) warn.push(`${rel(f)}: 見本の店名「${SAMPLE}」が残っています`);
+  }
+}
+if (/000円|0,000円|○○|03-0000-0000|example\.com/.test(allMd.map((f) => stripTodo(readFileSync(f, 'utf8'))).join('\n')) && s.published) {
+  bad.push('見本のままの値（000円・○○・03-0000-0000・example.com など）が残ったまま、本番（published: true）になっています');
+}
+
+// メニューに出ていないページ。間違いではないが、持ち主が気づいていないことが多い
+const inMenu = new Set([...main, ...footer].flatMap((i) => [i.url, ...i.children.map((c) => c.url)]));
+for (const f of pageFiles) {
+  const { data } = frontmatter(readFileSync(f, 'utf8'));
+  if (data.publish === false) continue;
+  const slug = String(data.slug || basename(f, '.md'));
+  const url = slug === 'index' ? '/' : `/${slug}/`;
+  if (!inMenu.has(url)) info.push(`メニューに無いページ: ${rel(f)}（${url} を知っていれば開けます。出したくなければノートを消すか publish: false）`);
 }
 
 // ---------- 結果 ----------
