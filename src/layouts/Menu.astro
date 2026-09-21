@@ -1,0 +1,25 @@
+---
+// メニュー1本ぶんの表示。上の帯・折りたたみ・下の帯で同じものを使い回す。
+// 表示する言葉はすべて content/menu.md から来る。ここには書かない。
+const { items, path } = Astro.props;
+const attrs = (i) => ({
+  href: i.url,
+  'aria-current': !i.external && i.url === path ? 'page' : undefined,
+  target: i.external ? '_blank' : undefined,
+  rel: i.external ? 'noopener' : undefined,
+});
+// 子のページを開いているときは、親にも印を付ける
+const inside = (i) => i.children.some((c) => !c.external && c.url === path);
+---
+<ul class="menu">
+  {items.map((i) => (
+    <li class:list={{ 'has-children': i.children.length > 0, 'is-inside': inside(i) }}>
+      {i.url ? <a {...attrs(i)}>{i.label}</a> : <span class="label" tabindex="0">{i.label}</span>}
+      {i.children.length > 0 && (
+        <ul class="submenu">
+          {i.children.map((c) => <li>{c.url ? <a {...attrs(c)}>{c.label}</a> : <span class="label">{c.label}</span>}</li>)}
+        </ul>
+      )}
+    </li>
+  ))}
+</ul>

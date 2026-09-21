@@ -8,7 +8,7 @@
 
 import { readFileSync, existsSync, statSync } from 'node:fs';
 import { join, relative, basename, extname } from 'node:path';
-import { CONTENT_DIR, walk, frontmatter, noteIndex, imageIndex } from '../src/lib/obsidian.mjs';
+import { CONTENT_DIR, walk, frontmatter, noteIndex, imageIndex, stripTodo } from '../src/lib/obsidian.mjs';
 import { site, menu } from '../src/lib/site.mjs';
 
 const bad = [], warn = [], info = [];
@@ -43,8 +43,8 @@ for (const f of pageFiles) {
 }
 
 // ---------- メニュー ----------
-const items = menu();
-if (!items.length) warn.push('content/menu.md にメニューがありません（上の帯に何も出ません）');
+const { main, footer } = menu();
+if (!main.length) warn.push('content/menu.md の「上のメニュー」が空です（上の帯に何も出ません）');
 
 // ---------- ブログ ----------
 const posts = walk(join(CONTENT_DIR, 'blog')).filter((f) => extname(f) === '.md');
@@ -64,7 +64,7 @@ const notes = noteIndex(), images = imageIndex();
 const allMd = walk(CONTENT_DIR).filter((f) => extname(f) === '.md');
 for (const f of allMd) {
   const { body } = frontmatter(readFileSync(f, 'utf8'));
-  const text = body.replace(/```[\s\S]*?```/g, '').replace(/`[^`\n]*`/g, '');   // コードの中は見ない
+  const text = stripTodo(body).replace(/```[\s\S]*?```/g, '').replace(/`[^`\n]*`/g, '');   // コードの中は見ない
   for (const m of text.matchAll(/(!?)\[\[([^\[\]\n]+?)\]\]/g)) {
     const [target, label] = m[2].split('|').map((x) => x.trim());
     if (m[1] === '!') {

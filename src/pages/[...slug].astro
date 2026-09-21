@@ -4,7 +4,7 @@
 import { getCollection, render } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import { publishedPosts, fmtDate } from '../lib/posts.mjs';
-import { site } from '../lib/site.mjs';
+import { site, labels } from '../lib/site.mjs';
 
 export async function getStaticPaths() {
   const pages = await getCollection('pages');
@@ -20,6 +20,7 @@ const isHome = page.id === 'index';
 const title = d.title || (isHome ? site().name : page.id);
 const posts = d.show_blog ? (await publishedPosts()).slice(0, d.show_blog) : [];
 const s = site();
+const L = labels();
 
 const jsonld = isHome
   ? [{ '@context': 'https://schema.org', '@type': 'WebSite', name: s.name, ...(s.url ? { url: s.url } : {}) }]
@@ -43,7 +44,7 @@ const jsonld = isHome
     <Content />
     {posts.length > 0 && (
       <>
-        <h2>お知らせ・ブログ</h2>
+        <h2>{L.blog_home_title}</h2>
         <ul class="post-list">
           {posts.map((p) => (
             <li><a href={`/blog/${p.entry.id}/`}>
@@ -52,7 +53,7 @@ const jsonld = isHome
             </a></li>
           ))}
         </ul>
-        <p style="margin-top:18px"><a href="/blog/">すべて見る →</a></p>
+        <p style="margin-top:18px"><a href="/blog/">{L.blog_more}</a></p>
       </>
     )}
   </article>

@@ -49,6 +49,20 @@ export function frontmatter(text) {
   return { data, body: src.slice(m[0].length) };
 }
 
+// > [!todo] のメモを取りのぞいた本文を返す。
+// メモは「Obsidian では見えるが、サイトには出さない」自分用の書き込み。
+// 本文を Markdown として処理する所では Sätteri の側で消しているが、
+// site.md や menu.md のようにプログラムから直接読む所では、ここで消す。
+export function stripTodo(body) {
+  const out = []; let skipping = false;
+  for (const line of String(body).split(/\r?\n/)) {
+    if (/^\s*>\s*\[!todo\]/i.test(line)) { skipping = true; continue; }
+    if (skipping && /^\s*>/.test(line)) continue;
+    skipping = false; out.push(line);
+  }
+  return out.join('\n');
+}
+
 // ファイル名（拡張子なし）→ URL の対応表をつくる。
 export function noteIndex() {
   const index = new Map();
@@ -112,11 +126,22 @@ export function obsidianLinks() {
   };
   const where = (ctx) => { try { return relative(process.cwd(), fileURLToPath(ctx.fileURL)); } catch { return ''; } };
 
+  // > [!todo] のメモはサイトに出さないので、その中のリンクや画像は直さなくてよい。
+  // （メモの中では [[menu]] のように、Obsidian の中だけで通じるリンクを使っている）
+  const isTodo = (n) => {
+    const head = n?.type === 'blockquote' && n.children?.[0]?.type === 'paragraph' ? n.children[0].children?.[0] : null;
+    return head?.type === 'text' && /^\[!todo\]/i.test(head.value);
+  };
+  const inTodo = (node, ctx) => {
+    for (let p = ctx.parent(node), i = 0; p && i < 12; p = ctx.parent(p), i++) if (isTodo(p)) return true;
+    return false;
+  };
+
   return defineMdastPlugin({
     name: 'obsidian-links',
 
     link(node, ctx) {
-      if (!node.url || isOutside(node.url)) return;
+      if (!node.url || isOutside(node.url) || inTodo(node, ctx)) return;
       let raw = node.url;
       try { raw = decodeURIComponent(raw); } catch { /* そのまま使う */ }
       const [name, heading] = raw.replace(/\.md$/, '').split('#');
@@ -129,8 +154,31 @@ export function obsidianLinks() {
       ctx.replaceNode(node, { ...node, url: url + hash });
     },
 
+    // Obsidian のコールアウト（> [!note] 見出し）。
+    //   > [!todo] … は「自分用のメモ」。Obsidian では見えるが、サイトには出さない。
+    //              ひな形のノートに「ここに何を書くか」を残しておくために使っている。
+    //   それ以外   … 色のついた囲みにする。
+    blockquote(node, ctx) {
+      const first = node.children?.[0];
+      const head = first?.type === 'paragraph' ? first.children?.[0] : null;
+      if (!head || head.type !== 'text') return;
+      const m = head.value.match(/^\[!([A-Za-z]+)\][+-]?[ \t]*([^\n]*)\n?/);
+      if (!m) return;
+      const kind = m[1].toLowerCase();
+      if (kind === 'todo') { ctx.removeNode(node); return; }
+
+      const rest = head.value.slice(m[0].length);
+      const firstKids = [...(rest ? [{ type: 'text', value: rest }] : []), ...first.children.slice(1)];
+      const children = [
+        ...(m[2].trim() ? [{ type: 'paragraph', children: [{ type: 'strong', children: [{ type: 'text', value: m[2].trim() }] }] }] : []),
+        ...(firstKids.length ? [{ type: 'paragraph', children: firstKids }] : []),
+        ...node.children.slice(1),
+      ];
+      ctx.replaceNode(node, { type: 'blockquote', children, data: { hProperties: { class: `callout callout-${kind}` } } });
+    },
+
     image(node, ctx) {
-      if (!node.url || isOutside(node.url)) return;
+      if (!node.url || isOutside(node.url) || inTodo(node, ctx)) return;
       let raw = node.url;
       try { raw = decodeURIComponent(raw); } catch { /* そのまま使う */ }
       const url = indexes().images.get(basename(raw));

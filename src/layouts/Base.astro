@@ -3,11 +3,13 @@
 // ★ このファイルに文言を直接書かないこと。
 //   書いた瞬間に「Obsidian を直してもサイトが変わらない場所」ができる。
 import '../styles/global.css';
-import { site, menu } from '../lib/site.mjs';
+import { site, menu, labels } from '../lib/site.mjs';
+import Menu from './Menu.astro';
 
 const { title, description, image, type = 'website', jsonld = [] } = Astro.props;
 const s = site();
-const items = menu();
+const L = labels();
+const { main, footer } = menu();
 const path = Astro.url.pathname;
 const pageTitle = title && title !== s.name ? `${title} | ${s.name}` : s.name;
 const desc = description || s.description;
@@ -41,20 +43,14 @@ const org = { '@context': 'https://schema.org', '@type': 'Organization', name: s
   {[org, ...jsonld].map((j) => <script type="application/ld+json" set:html={JSON.stringify(j)} />)}
 </head>
 <body style={`--accent:${s.color};--accent-ink:${s.accentInk}`}>
-  {!s.published && <div class="draft-note">準備中のサイトです（検索には載りません）</div>}
+  {!s.published && <div class="draft-note">{L.draft_notice}</div>}
   <header class="site-header">
     <div class="wrap">
       <a class="site-name" href="/">{s.name}</a>
-      <nav class="nav nav-wide" aria-label="メニュー">
-        {items.map((i) => <a href={i.url} aria-current={!i.external && i.url === path ? 'page' : undefined}
-          target={i.external ? '_blank' : undefined} rel={i.external ? 'noopener' : undefined}>{i.label}</a>)}
-      </nav>
+      <nav class="nav nav-wide" aria-label={L.menu}><Menu items={main} path={path} /></nav>
       <details class="nav-toggle">
-        <summary>メニュー</summary>
-        <nav class="nav" aria-label="メニュー">
-          {items.map((i) => <a href={i.url} aria-current={!i.external && i.url === path ? 'page' : undefined}
-            target={i.external ? '_blank' : undefined} rel={i.external ? 'noopener' : undefined}>{i.label}</a>)}
-        </nav>
+        <summary>{L.menu}</summary>
+        <nav class="nav" aria-label={L.menu}><Menu items={main} path={path} /></nav>
       </details>
     </div>
   </header>
@@ -64,9 +60,10 @@ const org = { '@context': 'https://schema.org', '@type': 'Organization', name: s
 
   <footer class="site-footer">
     <div class="wrap">
+      {footer.length > 0 && <nav class="footer-nav" aria-label={L.footer_menu}><Menu items={footer} path={path} /></nav>}
       <p class="name">{s.name}</p>
       {s.address && <p>{s.address}</p>}
-      {s.tel && <p>電話 <a href={`tel:${String(s.tel).replace(/[^\d+]/g, '')}`}>{s.tel}</a></p>}
+      {s.tel && <p>{L.tel} <a href={`tel:${String(s.tel).replace(/[^\d+]/g, '')}`}>{s.tel}</a></p>}
       {s.email && <p><a href={`mailto:${s.email}`}>{s.email}</a></p>}
       {s.footer && <p style="margin-top:12px">{s.footer}</p>}
     </div>

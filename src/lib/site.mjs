@@ -6,7 +6,7 @@
 
 import { readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
-import { CONTENT_DIR, frontmatter, noteIndex } from './obsidian.mjs';
+import { CONTENT_DIR, frontmatter, noteIndex, stripTodo } from './obsidian.mjs';
 
 const DEFAULTS = {
   name: 'サイト名が未設定です',
@@ -20,6 +20,31 @@ const DEFAULTS = {
   lang: 'ja',
 };
 
+// サイトのあちこちに出る短い言葉（content/labels.md）。
+// ページの部品（src/）に言葉を直接書かないための置き場。
+// ここの既定値は、labels.md を消してしまったときの保険。ふだんは labels.md のほうが使われる。
+const DEFAULT_LABELS = {
+  menu: 'メニュー',
+  footer_menu: '下のメニュー',
+  tel: '電話',
+  draft_notice: '準備中のサイトです（検索には載りません）',
+  blog_title: 'ブログ',
+  blog_description: 'お知らせとブログの一覧です。',
+  blog_home_title: 'お知らせ・ブログ',
+  blog_more: 'すべて見る →',
+  blog_back: '← ブログの一覧へ',
+  blog_empty: 'まだ記事がありません。',
+};
+
+export function labels() {
+  const file = join(CONTENT_DIR, 'labels.md');
+  if (!existsSync(file)) return { ...DEFAULT_LABELS };
+  const { data } = frontmatter(readFileSync(file, 'utf8'));
+  const out = { ...DEFAULT_LABELS };
+  for (const [k, v] of Object.entries(data)) if (k in out && String(v).trim()) out[k] = String(v);
+  return out;
+}
+
 export function site() {
   const file = join(CONTENT_DIR, 'site.md');
   if (!existsSync(file)) return { ...DEFAULTS, footer: '', accentInk: '#ffffff' };
@@ -27,7 +52,7 @@ export function site() {
   const s = { ...DEFAULTS, ...data };
   s.url = String(s.url || '').replace(/\/+$/, '');
   s.published = s.published === true;
-  s.footer = body.trim();
+  s.footer = stripTodo(body).trim();
   s.color = /^#[0-9a-fA-F]{6}$/.test(String(s.color)) ? String(s.color) : DEFAULTS.color;
   // 色は持ち主が自由に決めるので、その上に載せる文字を白にするか黒にするかはこちらで選ぶ。
   // 薄い黄色に白文字、のような読めない組み合わせを作らせないため。
@@ -42,31 +67,61 @@ function luminance(hex) {
 }
 
 // menu.md は、リンクを箇条書きで並べただけのノート。
-//     - [[index|ホーム]]
-//     - [[会社概要]]
-//     - [[blog|ブログ]]
-//     - [お問い合わせ](https://example.com/form)
-// 並び順＝メニューの並び順。上から書いた順に出る。
+//
+//     - [[ホーム]]
+//     - [[サービス]]
+//         - [[ホームページ制作]]        ← 字下げすると、サービスの下にぶら下がる
+//         - [[更新サポート]]
+//     - [[お問い合わせ]]
+//
+//     ## 下のメニュー                   ← この見出しより下は、ページのいちばん下に出る
+//     - [[プライバシーポリシー]]
+//
+// 並び順＝メニューの並び順。行を消せばメニューから消え、足せば増える。
+// ページの URL は slug で決まり、メニューのどこに置いても変わらない。
+// （メニューを動かしただけでリンク切れになる、を起こさないため）
 export function menu() {
   const file = join(CONTENT_DIR, 'menu.md');
-  if (!existsSync(file)) return [];
+  const out = { main: [], footer: [] };
+  if (!existsSync(file)) return out;
   const notes = noteIndex();
   const { body } = frontmatter(readFileSync(file, 'utf8'));
-  const items = [];
-  for (const line of body.split(/\r?\n/)) {
-    const li = line.match(/^\s*[-*+]\s+(.*)$/);
-    if (!li) continue;
-    const wiki = li[1].match(/\[\[([^\]|]+?)(?:\|([^\]]+))?\]\]/);
-    const md = li[1].match(/\[([^\]]+)\]\(([^)]+)\)/);
-    if (wiki) {
-      const name = wiki[1].trim();
-      const url = notes.get(name);
-      if (!url) { console.warn(`  ⚠ menu.md: 「${name}」というノートが見つかりません（メニューから外しました）`); continue; }
-      items.push({ label: (wiki[2] || name).trim(), url, external: false });
-    } else if (md) {
-      const external = /^https?:\/\//.test(md[2]);
-      items.push({ label: md[1].trim(), url: md[2].trim(), external });
+  // [!todo] のメモの中に書いた見本の行を、メニューとして読まないようにする
+  const lines = stripTodo(body).split(/\r?\n/);
+
+  let target = out.main, parent = null, baseIndent = null;
+  for (const line of lines) {
+    const h = line.match(/^#{1,6}\s+(.*)$/);
+    if (h) {
+      if (/下|フッター|footer/i.test(h[1])) target = out.footer;
+      else if (/上|ヘッダー|メイン|header|main/i.test(h[1])) target = out.main;
+      parent = null; baseIndent = null;
+      continue;
     }
+    const li = line.match(/^(\s*)[-*+]\s+(.*)$/);
+    if (!li) continue;
+    const indent = li[1].replace(/\t/g, '    ').length;
+    if (baseIndent === null) baseIndent = indent;
+
+    const item = parseItem(li[2], notes);
+    if (!item) continue;
+    if (indent > baseIndent && parent) parent.children.push(item);
+    else { target.push(item); parent = item; }
   }
-  return items;
+  return out;
+}
+
+function parseItem(text, notes) {
+  const wiki = text.match(/\[\[([^\]|]+?)(?:\|([^\]]+))?\]\]/);
+  const md = text.match(/\[([^\]]+)\]\(([^)]+)\)/);
+  if (wiki) {
+    const name = wiki[1].trim();
+    const url = notes.get(name);
+    if (!url) { console.warn(`  ⚠ menu.md: 「${name}」というノートが見つかりません（メニューから外しました）`); return null; }
+    return { label: (wiki[2] || name).trim(), url, external: false, children: [] };
+  }
+  if (md) return { label: md[1].trim(), url: md[2].trim(), external: /^https?:\/\//.test(md[2]), children: [] };
+  // リンクの無い行は、子メニューをまとめるための見出しとして使える
+  const label = text.trim();
+  return label ? { label, url: null, external: false, children: [] } : null;
 }

@@ -2,7 +2,7 @@
 import { render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import { publishedPosts, fmtDate } from '../../lib/posts.mjs';
-import { site } from '../../lib/site.mjs';
+import { site, labels } from '../../lib/site.mjs';
 
 export async function getStaticPaths() {
   // publish: true のものだけページにする。下書きは URL 自体が生まれない。
@@ -13,6 +13,7 @@ const { post } = Astro.props;
 const { Content } = await render(post.entry);
 const d = post.entry.data;
 const s = site();
+const L = labels();
 const jsonld = [{
   '@context': 'https://schema.org', '@type': 'BlogPosting', headline: post.title,
   ...(post.date ? { datePublished: post.date.toISOString() } : {}),
@@ -29,6 +30,6 @@ const jsonld = [{
     </p>
     <Content />
     <hr>
-    <p><a href="/blog/">← ブログの一覧へ</a></p>
+    <p><a href="/blog/">{L.blog_back}</a></p>
   </article>
 </Base>

@@ -1,12 +1,14 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { publishedPosts, fmtDate } from '../../lib/posts.mjs';
+import { labels } from '../../lib/site.mjs';
 const posts = await publishedPosts();
+const L = labels();
 ---
-<Base title="ブログ" description="お知らせとブログの一覧です。">
+<Base title={L.blog_title} description={L.blog_description}>
   <div class="prose">
-    <h1>ブログ</h1>
-    {posts.length === 0 && <p>まだ記事がありません。</p>}
+    <h1>{L.blog_title}</h1>
+    {posts.length === 0 && <p>{L.blog_empty}</p>}
     <ul class="post-list">
       {posts.map((p) => (
         <li><a href={`/blog/${p.entry.id}/`}>

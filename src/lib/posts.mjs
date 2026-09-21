@@ -20,5 +20,6 @@ export async function publishedPosts() {
     .sort((a, b) => (b.date?.getTime() ?? 0) - (a.date?.getTime() ?? 0));
 }
 
-export const fmtDate = (d) =>
-  d ? `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日` : '';
+// 日付の見せ方は、言葉をここに書かずに、言語の設定（site.md の lang）にまかせる
+export const fmtDate = (d, lang = 'ja') =>
+  d ? new Intl.DateTimeFormat(lang, { dateStyle: 'long', timeZone: 'Asia/Tokyo' }).format(d) : '';
