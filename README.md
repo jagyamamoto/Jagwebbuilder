@@ -1,4 +1,6 @@
-# Jagwebbuilder
+# Jag web builder
+
+<img src="guide/jag-avatar.png" alt="" width="96" height="96" align="right">
 
 **Obsidian で書いたノートが、そのままホームページになります。**
 

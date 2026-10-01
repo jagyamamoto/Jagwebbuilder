@@ -8,6 +8,7 @@ address: 東京都○○区○○ 1-2-3
 color: "#a8480c"
 project: jag-curry-shop
 published: false
+credit: true
 ---
 © Jagカレーショップ
 
@@ -18,5 +19,6 @@ published: false
 > - `color` サイトの主な色（`#` から始まる6けた）
 > - `project` 公開するときの名前（英小文字・数字・ハイフン）
 > - `published` **`false` のあいだは検索に載りません。** 本番にするとき `true` に変えます
+> - `credit` ページのいちばん下に「Jag web builder で作成」と小さく出します（このひな形の名前です）。出したくないときは `false` に変えます
 >
 > `---` の下の1行（© …）は、ページのいちばん下に出る文です。

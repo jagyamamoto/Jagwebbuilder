@@ -18,6 +18,7 @@ const DEFAULTS = {
   color: '#1f5f8b',
   published: false,
   lang: 'ja',
+  credit: true,   // ページのいちばん下に「Jag web builder で作成」を小さく出すか（site.md の credit: false で消せる）
 };
 
 // サイトのあちこちに出る短い言葉（content/labels.md）。
@@ -34,6 +35,7 @@ const DEFAULT_LABELS = {
   blog_more: 'すべて見る →',
   blog_back: '← ブログの一覧へ',
   blog_empty: 'まだ記事がありません。',
+  made_with: 'Jag web builder で作成',
 };
 
 export function labels() {
@@ -52,6 +54,7 @@ export function site() {
   const s = { ...DEFAULTS, ...data };
   s.url = String(s.url || '').replace(/\/+$/, '');
   s.published = s.published === true;
+  s.credit = !(s.credit === false || String(s.credit).toLowerCase() === 'false');
   s.footer = stripTodo(body).trim();
   s.color = /^#[0-9a-fA-F]{6}$/.test(String(s.color)) ? String(s.color) : DEFAULTS.color;
   // 色は持ち主が自由に決めるので、その上に載せる文字を白にするか黒にするかはこちらで選ぶ。

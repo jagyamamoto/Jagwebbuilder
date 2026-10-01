@@ -9,6 +9,7 @@ blog_home_title: お知らせ
 blog_more: すべて見る →
 blog_back: ← お知らせの一覧へ
 blog_empty: まだお知らせがありません。
+made_with: Jag web builder で作成
 ---
 
 > [!todo] このノートの使い方（このメモはサイトには出ません）

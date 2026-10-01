@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Jagwebbuilder はじめに</title>
+<title>Jag web builder はじめに</title>
 <meta name="description" content="Obsidian とコードAIで、自分のホームページをつくって公開するまでの手引き。">
 <style>
 /* 色と大きさはここだけで決めている。明るい表示・暗い表示の両方を用意してある。 */
@@ -48,7 +48,8 @@ a:focus-visible, button:focus-visible, input:focus-visible, summary:focus-visibl
 
 /* --- 左の目次 --- */
 .side { position: sticky; top: 0; align-self: start; height: 100vh; overflow-y: auto; padding: 26px 18px 30px; border-right: 1px solid var(--line); }
-.side .brand { font-weight: 800; font-size: 17px; letter-spacing: .02em; margin: 0 0 2px; }
+.side .brand { font-weight: 800; font-size: 17px; letter-spacing: .02em; margin: 0 0 2px; display: flex; align-items: center; gap: 10px; }
+.side .brand .brand-mark { width: 40px; height: 40px; border-radius: 50%; background: #fff; border: 1px solid var(--line); flex: none; }
 .side .sub { font-size: 12.5px; color: var(--ink-faint); margin: 0 0 18px; }
 .meter { height: 6px; background: var(--sunk); border-radius: 99px; overflow: hidden; margin: 0 0 6px; }
 .meter i { display: block; height: 100%; width: 0; background: var(--ok); transition: width .3s; }
@@ -144,7 +145,7 @@ details[open] > summary { border-bottom: 1px dashed var(--line); margin-bottom: 
 <div class="layout">
 
 <aside class="side">
-  <p class="brand">Jagwebbuilder</p>
+  <p class="brand"><img class="brand-mark" src="jag-avatar.png" alt="" width="40" height="40">Jag web builder</p>
   <p class="sub">はじめに（手引きと使い方）</p>
   <div class="meter" aria-hidden="true"><i id="meter"></i></div>
   <p class="meter-text" id="meter-text"></p>
@@ -301,7 +302,7 @@ details[open] > summary { border-bottom: 1px dashed var(--line); margin-bottom: 
   <div class="step-head"><div class="step-no">4</div><div><p class="step-kicker">AIに貼る ①</p><h2>ひな形を取り込む</h2></div></div>
   <p>起動したコードAIに、次を貼り付けます。</p>
   <div class="box ai"><div class="box-head"><span>コードAIに貼る</span><button class="copy" type="button">コピー</button></div>
-<pre data-t="いまいるフォルダ（{{DIR}}）に、ホームページのひな形「Jagwebbuilder」を用意してください。
+<pre data-t="いまいるフォルダ（{{DIR}}）に、ホームページのひな形「Jag web builder」（リポジトリ名は Jagwebbuilder）を用意してください。
 
 ひな形: {{REPO}}
 
@@ -574,7 +575,7 @@ src/styles/global.css の :root を中心に直してください。文章は変
   <label class="donebox"><input type="checkbox" data-done="s-help"> 読みました</label>
 </section>
 
-<p class="small">Jagwebbuilder — MIT License. このページは、お使いのパソコンの中だけで動いています。入力した内容が外に送られることはありません。</p>
+<p class="small">Jag web builder — MIT License. このページは、お使いのパソコンの中だけで動いています。入力した内容が外に送られることはありません。</p>
 
 </div></main>
 </div>

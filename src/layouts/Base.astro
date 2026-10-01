@@ -28,6 +28,7 @@ const org = { '@context': 'https://schema.org', '@type': 'Organization', name: s
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="generator" content="Jag web builder">
   <title>{pageTitle}</title>
   {desc && <meta name="description" content={desc}>}
   <meta name="robots" content={robots}>
@@ -66,6 +67,7 @@ const org = { '@context': 'https://schema.org', '@type': 'Organization', name: s
       {s.tel && <p>{L.tel} <a href={`tel:${String(s.tel).replace(/[^\d+]/g, '')}`}>{s.tel}</a></p>}
       {s.email && <p><a href={`mailto:${s.email}`}>{s.email}</a></p>}
       {s.footer && <p style="margin-top:12px">{s.footer}</p>}
+      {s.credit && <p class="made-with"><a href="https://jagyamamoto.github.io/Jagwebbuilder/" rel="noopener"><img src="/jag-web-builder-mark.png" alt="" width="28" height="28" loading="lazy" decoding="async" /><span>{L.made_with}</span></a></p>}
     </div>
   </footer>
 </body>

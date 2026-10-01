@@ -113,3 +113,10 @@ main { padding: 56px 0 72px; }
 .site-footer .name { font-weight: 800; color: var(--ink); font-size: 15px; }
 .site-footer p { margin: 0 0 6px; }
 .draft-note { background: #fff4d6; border-bottom: 1px solid #ecd58a; color: #5c4700; font-size: 13px; text-align: center; padding: 6px 12px; }
+
+/* ページのいちばん下の「Jag web builder で作成」（site.md の credit: false で消せる） */
+.site-footer .made-with { margin-top: 18px; font-size: 12px; }
+.site-footer .made-with a { display: inline-flex; align-items: center; gap: 8px; color: var(--ink-soft); text-decoration: none; }
+.site-footer .made-with a:hover span { text-decoration: underline; }
+.site-footer .made-with img { width: 28px; height: 28px; border-radius: 50%; background: #fff; border: 1px solid var(--line); }
+
