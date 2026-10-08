@@ -55,12 +55,21 @@
   footer{padding:32px 0 48px;font-size:14px;color:var(--sub)}
   @media (max-width:760px){.hero,.duo{grid-template-columns:1fr}.hero{padding-top:32px}}
 </style>
+<!-- アクセス解析（Google アナリティクス 4・jagproject.com と同じプロパティ）。同意の前は Cookie を使わない送信だけ（同意モード）。2026-10-08 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-H00WKC46PB"></script>
+<script>
+  window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
+  var jagConsent=null;try{jagConsent=localStorage.getItem('jag.analytics.consent.v1');}catch(e){}
+  gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:jagConsent==='granted'?'granted':'denied'});
+  gtag('js',new Date());
+  gtag('config','G-H00WKC46PB',{page_title:'Jag web builder（github.io）'});
+</script>
 </head>
 <body>
 <header class="top">
   <div class="wrap">
     <a class="brand" href="https://jagyamamoto.github.io/Jagwebbuilder/"><img src="jag-avatar.png" alt="">Jag web builder</a>
-    <a class="btn small" href="https://jagutilities.jagproject.com/web-builder">手引きを開く（登録）</a>
+    <a class="btn small" href="https://jagutilities.jagproject.com/web-builder?from=gh">手引きを開く（登録）</a>
   </div>
 </header>
 
@@ -70,7 +79,7 @@
       <h1>自分のホームページを、<br>AI といっしょに作る。</h1>
       <p class="lede">Jag web builder（ジャグ・ウェブ・ビルダー）は、無料のノートのアプリで書いたノートが、そのままホームページになる無料の道具です。メニューも、各ページの文章も、ブログもノートで書き、直したいときはノートを書き換えるだけ。管理画面はありません。</p>
       <div class="cta">
-        <a class="btn" href="https://jagutilities.jagproject.com/web-builder">メールで登録して手引きを開く →</a>
+        <a class="btn" href="https://jagutilities.jagproject.com/web-builder?from=gh">メールで登録して手引きを開く →</a>
         <a class="btn ghost" href="#how">しくみを見る</a>
       </div>
       <p class="note-free">道具は無料（オープンソース・MIT ライセンス）。公開に月額の費用はかかりません（独自ドメインの代金を除く）。</p>
@@ -229,7 +238,7 @@
       <div class="cta-band">
         <h2 style="margin-bottom:10px">手引きを開いて、はじめる</h2>
         <p>メールアドレスを登録すると、手引きがすぐに開きます（無料）。</p>
-        <a class="btn" href="https://jagutilities.jagproject.com/web-builder">メールで登録して手引きを開く →</a>
+        <a class="btn" href="https://jagutilities.jagproject.com/web-builder?from=gh">メールで登録して手引きを開く →</a>
       </div>
     </div>
   </section>
@@ -241,5 +250,18 @@
     <p>運営: <a href="https://www.jagproject.com/">Jag Project, LLC</a> ／ ご相談: <a href="https://www.jagproject.com/contact">jagproject.com/contact</a></p>
   </div>
 </footer>
+<div id="jag-consent" hidden style="position:fixed;left:12px;right:12px;bottom:12px;max-width:640px;margin:0 auto;background:#fff;border:1px solid #dfe3e7;border-radius:12px;padding:12px 14px;box-shadow:0 8px 24px rgba(0,0,0,.12);font-size:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;z-index:10">
+  <span style="flex:1 1 260px">このページは、使われ方を知るためにアクセス解析（Google アナリティクス）を使っています。Cookie を使ってよいですか。</span>
+  <button type="button" data-c="denied" style="font:inherit;padding:8px 12px;border:1px solid #bbb;border-radius:8px;background:#fff">許可しない</button>
+  <button type="button" data-c="granted" style="font:inherit;padding:8px 12px;border:0;border-radius:8px;background:#1b5e4a;color:#fff">許可する</button>
+</div>
+<script>
+  (function(){
+    var bar=document.getElementById('jag-consent');
+    if(jagConsent!=='granted'&&jagConsent!=='denied'){bar.hidden=false;}
+    bar.addEventListener('click',function(e){var v=e.target.getAttribute('data-c');if(!v)return;try{localStorage.setItem('jag.analytics.consent.v1',v);}catch(x){}gtag('consent','update',{analytics_storage:v});bar.hidden=true;});
+    document.querySelectorAll('a[href^="https://jagutilities.jagproject.com/web-builder"]').forEach(function(a,i){a.addEventListener('click',function(){gtag('event','jwb_register_click',{placement:a.closest('header')?'header':(a.closest('.cta-band')?'bottom':'hero'),transport_type:'beacon'});});});
+  })();
+</script>
 </body>
 </html>
