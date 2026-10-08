@@ -27,7 +27,7 @@ Astro で書き出し、Cloudflare Pages で公開します。
 | 画像 | `content/images/`（元の写真は `素材/` に入れてもらい、`npm run photos` で入れる） |
 | 見た目（余白・文字の大きさなど） | `src/styles/global.css` の `:root` |
 
-持ち主向けの手引きは [`はじめに.html`](はじめに.html)（本体は [`guide/index.html`](guide/index.html)） です。持ち主はこれを見ながら、
+持ち主向けの手引きは、メールアドレスを登録すると開ける形です（入口 https://jagutilities.jagproject.com/web-builder ・[`はじめに.html`](はじめに.html) からも開けます）。持ち主はこれを見ながら、
 あなたに貼り付ける文章をコピーして進めます。**手引きに書いてある流れと食い違うことをしないでください。**
 
 ---
